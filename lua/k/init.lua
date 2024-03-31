@@ -1,7 +1,7 @@
 local M = {}
 
 function M.setup(opts)
-	require("").setup(opts)
+	require("k.config").setup(opts)
 end
 
 return setmetatable(M, {

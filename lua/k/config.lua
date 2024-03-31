@@ -1,17 +1,28 @@
 local M = {}
 
+-- Locals
+
 local defaults = {
-	path = "k"
+	path = "k",
+	postwin = {
+		float = true,
+	},
 }
 
+local options
+
+-- Module
+
 function M.setup(opts)
-	local all = { opts or {}, defaults }
-	return vim.tbl_deep_extend("force", unpack(all))
+	local all = { defaults, opts or {} }
+	options = vim.tbl_deep_extend("force", unpack(all))
 end
 
 return setmetatable(M, {
 	__index = function(_, key)
-		options or M.setup()
+		if not options then
+			M.setup()
+		end
 		return options[key]
 	end,
 })
