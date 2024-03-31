@@ -4,6 +4,28 @@ local va = vim.api
 
 -- Locals
 
+local function get_lines(buffer, sidx, eidx, strict_indexing)
+	local lines = va.nvim_buf_get_lines(buffer, sidx, eidx, strict_indexing)
+	if not lines or not #lines then
+		return nil
+	end
+
+	-- Remove shebang
+	if sidx == 0 and string.find(lines[1], "^#!.*k") then
+		lines = { unpack(lines, 2) }
+	end
+
+	-- Remove comments and join lines
+	local prog = ""
+	for _, l in ipairs(lines) do
+		if not string.find(l, "^/") then
+			prog = prog .. l .. "\n"
+		end
+	end
+
+	return prog
+end
+
 local function get_visual_lines()
 	local cursor = vim.api.nvim_win_get_cursor(0)
 	local cline, ccol = cursor[1], cursor[2]
@@ -31,21 +53,19 @@ local function get_visual_lines()
 		ecol = ecol + 1
 	end
 
-	return va.nvim_buf_get_lines(0, sline - 1, eline, 0)
+	return get_lines(0, sline - 1, eline, false)
 end
 
 local function get_buffer_lines()
-	return va.nvim_buf_get_lines(0, 0, -1, true)
+	return get_lines(0, 0, -1, true)
 end
 
-local function run_k(cmd)
+local function run_k(path, stdin)
 	local origdir = vim.loop.cwd()
 	local bufdir = vim.fn.expand("%:p:h")
 
 	vim.cmd.cd(bufdir)
-	local p = assert(io.popen(cmd))
-	local output = p:read("*all")
-	p:close()
+	local output = vim.fn.system(path, stdin)
 	vim.cmd.cd(origdir)
 
 	return vim.split(output, "\n")
@@ -61,9 +81,8 @@ function M.eval(opts)
 	if not lines then
 		return
 	end
-	local program = table.concat(lines, "\n")
-	local cmd = 'printf "' .. program .. '\n" | ' .. config.path .. " 2>&1"
-	require("k.postwin").post(run_k(cmd))
+
+	require("k.outbuf").post(run_k(config.path, lines))
 end
 
 function M.eval_selection(opts)
@@ -74,13 +93,16 @@ function M.eval_selection(opts)
 	if not lines then
 		return
 	end
-	local program = table.concat(lines, "\n")
-	local cmd = 'printf "' .. program .. '\n" | ' .. config.path .. " 2>&1"
-	require("k.postwin").post(run_k(cmd))
+
+	require("k.outbuf").post(run_k(config.path, lines))
 end
 
-function M.clear()
-	require("k.postwin").clear()
+function M.outbuf_toggle()
+	require("k.outbuf").toggle()
+end
+
+function M.outbuf_clear()
+	require("k.outbuf").clear()
 end
 
 return M

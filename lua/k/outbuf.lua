@@ -3,10 +3,10 @@ local M = {}
 local va = vim.api
 local config = require("k.config")
 
--- Locals
-
 M.win = nil
 M.buf = nil
+
+-- Locals
 
 local function is_valid()
 	return M.buf and va.nvim_buf_is_loaded(M.buf)
@@ -62,10 +62,10 @@ end
 
 local function open_split()
 	vim.cmd("botright split")
-	local id = va.nvim_get_current_win()
-	va.nvim_win_set_buf(id, M.buf)
+	local wid = va.nvim_get_current_win()
+	va.nvim_win_set_buf(wid, M.buf)
 	vim.cmd([[ wincmd p ]])
-	return id
+	return wid
 end
 
 -- Module
@@ -78,20 +78,37 @@ function M.open()
 		create()
 	end
 
-	M.win = config.postwin.float and open_float() or open_split()
+	M.win = config.outbuf.float and open_float() or open_split()
 	vim.api.nvim_win_call(M.win, M.on_open)
 	return M.win
+end
+
+function M.close()
+	if not is_open() then
+		return
+	end
+	va.nvim_win_close(M.win, false)
+	M.win = nil
 end
 
 function M.post(output)
 	if not is_valid() or not is_open() then
 		M.open()
 	end
-	M.clear()
+
+	if config.overwrite then
+		M.clear()
+	end
 
 	va.nvim_buf_set_option(M.buf, "modifiable", true)
-	va.nvim_buf_set_lines(M.buf, 0, -1, true, output)
+	va.nvim_buf_set_lines(M.buf, -1, -1, true, output)
 	va.nvim_buf_set_option(M.buf, "modifiable", false)
+
+	-- Move cursor to end of outbuf.
+	if is_open() then
+		local line_count = vim.api.nvim_buf_line_count(M.buf)
+		va.nvim_win_set_cursor(M.win, { line_count, 0 })
+	end
 end
 
 function M.toggle()

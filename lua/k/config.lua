@@ -4,7 +4,8 @@ local M = {}
 
 local defaults = {
 	path = "k",
-	postwin = {
+	overwrite = false,
+	outbuf = {
 		float = true,
 	},
 }
