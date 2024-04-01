@@ -16,7 +16,7 @@ A [k](<https://en.wikipedia.org/wiki/K_(programming_language)>) repl for Neovim.
 ```lua
 {
 	"RKBethke/k.nvim",
-    ft = "k",
+	ft = "k",
 	keys = {
 		{
 			"<CR>",
