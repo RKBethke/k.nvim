@@ -21,6 +21,7 @@ A [k](<https://en.wikipedia.org/wiki/K_(programming_language)>) repl for Neovim.
 		{
 			"<CR>",
 			mode = { "n", "x", "o" },
+			ft = "k",
 			function()
 				require("k").eval()
 			end,
@@ -29,6 +30,7 @@ A [k](<https://en.wikipedia.org/wiki/K_(programming_language)>) repl for Neovim.
 		{
 			"<CR>",
 			mode = { "v" },
+			ft = "k",
 			function()
 				require("k").eval_selection()
 			end,
@@ -37,6 +39,7 @@ A [k](<https://en.wikipedia.org/wiki/K_(programming_language)>) repl for Neovim.
 		{
 			"<M-L>",
 			mode = { "i", "n", "x", "o", "v" },
+			ft = "k",
 			function()
 				require("k").outbuf_clear()
 			end,
@@ -45,6 +48,7 @@ A [k](<https://en.wikipedia.org/wiki/K_(programming_language)>) repl for Neovim.
 		{
 			"<M-CR>",
 			mode = { "n", "x", "o", "v" },
+			ft = "k",
 			function()
 				require("k").outbuf_toggle()
 			end,
