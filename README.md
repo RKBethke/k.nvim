@@ -16,6 +16,7 @@ A [k](<https://en.wikipedia.org/wiki/K_(programming_language)>) repl for Neovim.
 ```lua
 {
 	"RKBethke/k.nvim",
+    ft = "k",
 	keys = {
 		{
 			"<CR>",
@@ -68,9 +69,25 @@ Default Settings
     path = "k",
     -- Clear output after every evaluation.
     overwrite = false,
-    postwin = {
+	outbuf = {
         -- Display output in a floating window.
-        float = true,
+        float = false,
+        -- Map defining the floating window configuration. See `:h nvim_open_win`
+        -- Values may be functions which are evaluated at window open.
+		float_opts = {
+			relative = "editor",
+			anchor = "NE",
+			row = 0,
+			col = function()
+				return vim.o.columns
+			end,
+			width = 64,
+			height = function()
+				return vim.fn.winheight(0)
+			end,
+			border = "single",
+			style = "minimal",
+		},
     },
 }
 ```
@@ -79,5 +96,5 @@ Default Settings
 
 ## Syntax Highlighting
 
-Syntax, indent, and filetype support for k can be found in the [ngn/k](https://codeberg.org/ngn/k)
-repository.
+Syntax, indent, and filetype support for k can be found in the
+[ngn/k](https://codeberg.org/ngn/k/src/branch/master/vim-k) repository.

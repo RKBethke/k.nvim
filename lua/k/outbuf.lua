@@ -47,22 +47,22 @@ function M.on_open()
 end
 
 local function open_float()
-	local opts = {
-		relative = "editor",
-		anchor = "NE",
-		row = 0,
-		col = vim.o.columns,
-		width = 64,
-		height = 14,
-		border = "single",
-		style = "minimal",
-	}
+	local opts = {}
+	for k, v in pairs(config.outbuf.float_opts) do
+		if type(v) == "function" then
+			opts[k] = v()
+		else
+			opts[k] = v
+		end
+	end
+
 	return va.nvim_open_win(M.buf, false, opts)
 end
 
 local function open_split()
 	vim.cmd("botright split")
 	local wid = va.nvim_get_current_win()
+	va.nvim_win_set_height(wid, math.floor(vim.o.lines / 3))
 	va.nvim_win_set_buf(wid, M.buf)
 	vim.cmd([[ wincmd p ]])
 	return wid

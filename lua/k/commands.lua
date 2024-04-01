@@ -74,27 +74,25 @@ end
 -- Module
 
 function M.eval(opts)
-	local config = require("k.config")
-	table.insert(config, opts or {})
+	opts = require("k.config").get(opts)
 
 	local lines = get_buffer_lines()
 	if not lines then
 		return
 	end
 
-	require("k.outbuf").post(run_k(config.path, lines))
+	require("k.outbuf").post(run_k(opts.path, lines))
 end
 
 function M.eval_selection(opts)
-	local config = require("k.config")
-	table.insert(config, opts or {})
+	opts = require("k.config").get(opts)
 
 	local lines = get_visual_lines()
 	if not lines then
 		return
 	end
 
-	require("k.outbuf").post(run_k(config.path, lines))
+	require("k.outbuf").post(run_k(opts.path, lines))
 end
 
 function M.outbuf_toggle()
